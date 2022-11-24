@@ -8,7 +8,6 @@ import pathlib
 
 path = pathlib.Path(__file__).parent.resolve()
 
-import pyautogui
 from undetected_chromedriver import v2
 
 class Bot:
@@ -31,26 +30,25 @@ class Bot:
         element.click()
 
         time.sleep(3)
-
+        email = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="identifierId"]')))
+        email.send_keys(self.user)
         time.sleep(8)
 
-        pyautogui.write(self.user) 
+        next_e = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="identifierNext"]/div/button')))
+        next_e.click()
 
         time.sleep(5)
 
-        pyautogui.press('enter')
+        pasw = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="password"]/div[1]/div/div[1]/input')))
+        pasw.send_keys(self.passw)
 
         time.sleep(5)
 
-        pyautogui.write(self.passw) 
+    
+        next_p = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="passwordNext"]/div/button')))
+        next_p.click()
 
-        time.sleep(5)
-
-        pyautogui.press('enter')
-
-        time.sleep(3)
-
-        pyautogui.press('enter')
+        time.sleep(10)
 
     def flash_sale(self):
 

@@ -5,10 +5,11 @@ from selenium.webdriver.support import expected_conditions as EC
 import pandas as pd
 import time
 import pathlib
+from multiprocessing import Pool
 
+import threading
 path = pathlib.Path(__file__).parent.resolve()
 
-import pyautogui
 from undetected_chromedriver import v2
 
 class Bot:
@@ -31,26 +32,25 @@ class Bot:
         element.click()
 
         time.sleep(3)
-
+        email = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="identifierId"]')))
+        email.send_keys(self.user)
         time.sleep(8)
 
-        pyautogui.write(self.user) 
+        next_e = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="identifierNext"]/div/button')))
+        next_e.click()
 
         time.sleep(5)
 
-        pyautogui.press('enter')
+        pasw = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="password"]/div[1]/div/div[1]/input')))
+        pasw.send_keys(self.passw)
 
         time.sleep(5)
 
-        pyautogui.write(self.passw) 
+    
+        next_p = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="passwordNext"]/div/button')))
+        next_p.click()
 
-        time.sleep(5)
-
-        pyautogui.press('enter')
-
-        time.sleep(3)
-
-        pyautogui.press('enter')
+        time.sleep(10)
 
     def flash_sale(self):
 
@@ -92,15 +92,21 @@ def main():
 
     arr = sheets_names.to_numpy()
 
-    email = arr[0][0]
-    psw   = arr[0][1]
-    url   = arr[0][2]
+    start_time = time.time()    
 
-    try:
-        run(email,psw,url)
-    except Exception:
-        print("error")
-        time.sleep(60)
+    print("multiple threads took ", (time.time() - start_time), " seconds")
+
+    total = len(arr)
+
+    pool = Pool(processes=total)
+
+    for link in arr:  
+        pool.apply_async(run, args=(link[0],link[1],link[2]))
+
+    pool.close()
+
+    pool.join()
+
     
 
     time.sleep(60)
